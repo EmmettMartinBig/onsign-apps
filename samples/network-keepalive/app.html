@@ -13,7 +13,7 @@
     {{ __config__('check_url', label='Check URL', type='url', value='https://www.google.com/generate_204', help='URL requested to verify internet access') }}
     {{ __config__('interval', label='Check interval (seconds)', type='number', value=30, help='How often to check while online') }}
     {{ __config__('retry_interval', label='Retry interval (seconds)', type='number', value=5, help='How often to retry while offline') }}
-    {{ __config__('reload', label='Reload page on reconnect', type='bool', value=False) }}
+    {{ __config__('reload', label='Reload page on reconnect', type='bool', value=True, help='Reload this app page at its current URL when the network connection returns') }}
   </head>
   <body>
     <script>
