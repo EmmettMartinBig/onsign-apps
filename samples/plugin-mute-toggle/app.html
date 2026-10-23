@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="plugin-app" content="yes">
+
+    <title>Mute Toggle</title>
+
+    {{ __loadsdk__ }}
+    {{ __meta__('description', 'Plugin app that toggles player mute/unmute when the "mute_toggle" attribute changes (e.g. set through the Local API)') }}
+
+    {{
+      __attr__(
+        name="mute_toggle",
+        type="number",
+        mode="rw",
+        label="Mute toggle trigger (change value to toggle)",
+      )
+    }}
+    {{ __config__('unmute_volume', label='Default volume when unmuting (%)', type='number', value=50, js=True) }}
+  </head>
+  <body>
+    <script>
+      window.signageLoaded.then(function() {
+        var savedVolume = null;
+        var defaultVolume = parseInt(window.appConfig.unmute_volume, 10) || 50;
+
+        function toggleMute() {
+          try {
+            var current = signage.getVolume();
+            if (current > 0) {
+              savedVolume = current;
+              signage.setVolume(0);
+              signage.sendEvent("info", "mute", "Player muted");
+            } else {
+              signage.setVolume(savedVolume || defaultVolume);
+              signage.sendEvent("info", "unmute", "Player unmuted");
+            }
+          } catch (ex) {
+            signage.sendEvent("error", "mute-error", "Failed to toggle mute: " + ex);
+          }
+        }
+
+        document.addEventListener("appattrchanged", function (event) {
+          if (event.detail.name == "mute_toggle") {
+            toggleMute();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
